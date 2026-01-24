@@ -5,6 +5,7 @@ import com.oowee.server.domain.member.dto.SignUpRequest;
 import com.oowee.server.domain.member.entity.Member;
 import com.oowee.server.domain.member.entity.Role;
 import com.oowee.server.domain.member.repository.MemberRepository;
+import com.oowee.server.global.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
 
     // 회원가입
     @Transactional
@@ -41,8 +43,8 @@ public class MemberService {
 
     // 로그인
     @Transactional(readOnly = true)
-    public Long signIn(SignInRequest request) {
-        // 1. 이메일로 회원 찾기
+    public String signIn(SignInRequest request) {
+        // 1. 이메일 확인
         Member member = memberRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
 
@@ -52,6 +54,6 @@ public class MemberService {
         }
 
         // 3. 회원 ID 반환
-        return member.getId();
+        return jwtTokenProvider.createToken(member.getEmail());
     }
 }

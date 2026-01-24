@@ -28,11 +28,11 @@ public class MemberController {
 
     @PostMapping("/signin")
     public ResponseEntity<Map<String, String>> signIn(@RequestBody SignInRequest request) {
-        Long memberId = memberService.signIn(request);
+        String token = memberService.signIn(request);
 
         return ResponseEntity.ok(Map.of(
                 "message", "로그인 성공!",
-                "memberId", memberId.toString()
+                "token", token
         ));
     }
 }
