@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.Map;
 
 @RestController
@@ -33,6 +34,15 @@ public class MemberController {
         return ResponseEntity.ok(Map.of(
                 "message", "로그인 성공!",
                 "token", token
+        ));
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<Map<String, String>> getMyInfo(Principal principal) {
+        return ResponseEntity.ok(Map.of(
+                "message", "내 정보 조회 성공!",
+                "email", principal.getName(),
+                "role", "USER" // TODO: DB에서 가져오게 수정
         ));
     }
 }
