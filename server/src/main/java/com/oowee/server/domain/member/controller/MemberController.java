@@ -1,5 +1,6 @@
-package com.oowee.server.controller;
+package com.oowee.server.domain.member.controller;
 
+import com.oowee.server.domain.member.dto.SignInRequest;
 import com.oowee.server.domain.member.dto.SignUpRequest;
 import com.oowee.server.domain.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,16 @@ public class MemberController {
 
         return ResponseEntity.ok(Map.of(
                 "message", "회원가입 성공!",
+                "memberId", memberId.toString()
+        ));
+    }
+
+    @PostMapping("/signin")
+    public ResponseEntity<Map<String, String>> signIn(@RequestBody SignInRequest request) {
+        Long memberId = memberService.signIn(request);
+
+        return ResponseEntity.ok(Map.of(
+                "message", "로그인 성공!",
                 "memberId", memberId.toString()
         ));
     }

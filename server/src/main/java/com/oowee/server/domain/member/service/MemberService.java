@@ -1,5 +1,6 @@
 package com.oowee.server.domain.member.service;
 
+import com.oowee.server.domain.member.dto.SignInRequest;
 import com.oowee.server.domain.member.dto.SignUpRequest;
 import com.oowee.server.domain.member.entity.Member;
 import com.oowee.server.domain.member.entity.Role;
@@ -16,6 +17,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
+    // 회원가입
     @Transactional
     public Long signUp(SignUpRequest request) {
         // 1. 이메일 중복 검사
@@ -35,5 +37,21 @@ public class MemberService {
                 .build();
 
         return memberRepository.save(member).getId();
+    }
+
+    // 로그인
+    @Transactional(readOnly = true)
+    public Long signIn(SignInRequest request) {
+        // 1. 이메일로 회원 찾기
+        Member member = memberRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
+
+        // 2. 비밀번호 확인
+        if (!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+
+        // 3. 회원 ID 반환
+        return member.getId();
     }
 }
