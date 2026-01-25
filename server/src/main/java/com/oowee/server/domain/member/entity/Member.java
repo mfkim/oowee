@@ -33,7 +33,8 @@ public class Member {
     @Column(nullable = false)
     private Role role;
 
-    @Column(nullable = false)
+    // DB 컬럼 자체에 "기본값 0" 설정
+    @Column(nullable = false, columnDefinition = "BIGINT DEFAULT 0")
     private Long currentPoints;
 
     @CreatedDate

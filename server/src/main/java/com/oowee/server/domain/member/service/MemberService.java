@@ -22,15 +22,20 @@ public class MemberService {
     // 회원가입
     @Transactional
     public Long signUp(SignUpRequest request) {
-        // 1. 이메일 중복 검사
+        // 이메일 중복 검사
         if (memberRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
         }
 
-        // 2. 비밀번호 암호화
+        // 닉네임 중복 검사
+        if (memberRepository.existsByNickname(request.getNickname())) {
+            throw new IllegalArgumentException("이미 존재하는 닉네임입니다.");
+        }
+
+        // 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(request.getPassword());
 
-        // 3. 저장
+        // 저장
         Member member = Member.builder()
                 .email(request.getEmail())
                 .password(encodedPassword)
@@ -44,16 +49,19 @@ public class MemberService {
     // 로그인
     @Transactional(readOnly = true)
     public String signIn(SignInRequest request) {
-        // 1. 이메일 확인
-        Member member = memberRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
+        // 이메일이 없어도, 비밀번호가 틀려도 메시지는 똑같이!
+        String errorMessage = "이메일 또는 비밀번호가 일치하지 않습니다.";
 
-        // 2. 비밀번호 확인
+        // 이메일 확인
+        Member member = memberRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException(errorMessage));
+
+        // 비밀번호 확인
         if (!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new IllegalArgumentException(errorMessage);
         }
 
-        // 3. 회원 ID 반환
+        // JWT 토큰 반환
         return jwtTokenProvider.createToken(member.getEmail());
     }
 }
