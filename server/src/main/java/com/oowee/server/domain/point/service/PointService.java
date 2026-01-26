@@ -26,7 +26,7 @@ public class PointService {
     @Transactional
     public Long chargePoints(String email, Long amount) {
         // 1. 회원 조회
-        Member member = memberRepository.findByEmail(email)
+        Member member = memberRepository.findByEmailForUpdate(email)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
 
         // 2. 회원 테이블의 잔액 변경
@@ -48,7 +48,7 @@ public class PointService {
      */
     @Transactional
     public Long usePoints(String email, Long amount) {
-        Member member = memberRepository.findByEmail(email)
+        Member member = memberRepository.findByEmailForUpdate(email)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
 
         // 1. 잔액 차감

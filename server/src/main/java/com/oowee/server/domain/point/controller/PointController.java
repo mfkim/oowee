@@ -25,6 +25,10 @@ public class PointController {
             @RequestBody @Valid PointRequest request,
             Principal principal) {
 
+        if (principal == null) {
+            throw new IllegalArgumentException("인증 정보가 유효하지 않습니다.");
+        }
+
         Long currentBalance = pointService.chargePoints(principal.getName(), request.getAmount());
 
         return ResponseEntity.ok(Map.of(
@@ -40,6 +44,10 @@ public class PointController {
             @RequestBody @Valid PointRequest request,
             Principal principal) {
 
+        if (principal == null) {
+            throw new IllegalArgumentException("인증 정보가 유효하지 않습니다.");
+        }
+
         Long currentBalance = pointService.usePoints(principal.getName(), request.getAmount());
 
         return ResponseEntity.ok(Map.of(
@@ -52,6 +60,12 @@ public class PointController {
     // 3. 내 포인트 내역 조회
     @GetMapping("/history")
     public ResponseEntity<List<PointHistoryResponse>> getMyPointHistory(Principal principal) {
+
+        // 👇 [리뷰 반영] 안전벨트 착용
+        if (principal == null) {
+            throw new IllegalArgumentException("인증 정보가 유효하지 않습니다.");
+        }
+
         return ResponseEntity.ok(
                 pointService.getMyPointHistory(principal.getName())
         );
