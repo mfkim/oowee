@@ -52,4 +52,15 @@ public class Member {
         this.role = role;
         this.currentPoints = 0L;
     }
+
+    public void updatePoints(Long amount) {
+        // 현재 포인트 + 변동량
+        long restPoints = this.currentPoints + amount;
+
+        if (restPoints < 0) {
+            throw new IllegalArgumentException("포인트가 부족합니다.");
+        }
+
+        this.currentPoints = restPoints;
+    }
 }
