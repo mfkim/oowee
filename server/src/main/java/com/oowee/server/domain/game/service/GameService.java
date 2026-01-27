@@ -8,14 +8,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Random;
+import java.security.SecureRandom;
 
 @Service
 @RequiredArgsConstructor
 public class GameService {
 
     private final PointService pointService;
-    private final Random random = new Random();
+    private final SecureRandom random = new SecureRandom();
 
     @Transactional
     public GameResponse playDiceGame(String email, GameRequest request) {
@@ -30,7 +30,7 @@ public class GameService {
 
         // 4. 승패 결정
         boolean isWin = diceResult == request.getBettingType();
-        Long earnedAmount = 0L;
+        long earnedAmount = 0L;
 
         if (isWin) {
             // 승리 시: 베팅 금액의 2배 지급 (원금 회수 + 1배 이득)
@@ -42,7 +42,7 @@ public class GameService {
         return GameResponse.builder()
                 .diceNumber(diceNumber)
                 .result(diceResult)
-                .isWin(isWin)
+                .win(isWin)
                 .earnedAmount(earnedAmount)
                 .currentBalance(remainingPoints)
                 .message(isWin ? "축하합니다! 승리하셨습니다! 🎉" : "아쉽게도 패배하셨습니다.. 😭")
