@@ -64,4 +64,10 @@ public class MemberService {
         // JWT 토큰 반환
         return jwtTokenProvider.createToken(member.getEmail());
     }
+
+    // 이메일로 회원 전체 정보 가져오기
+    public Member getMember(String email) {
+        return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+    }
 }

@@ -2,11 +2,11 @@ package com.oowee.server.domain.member.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import lombok.Getter;
+import jakarta.validation.constraints.Pattern;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Getter
+@Data
 @NoArgsConstructor
 public class SignUpRequest {
 
@@ -15,10 +15,12 @@ public class SignUpRequest {
     private String email;
 
     @NotBlank(message = "비밀번호는 필수 입력값입니다.")
-    @Size(min = 8, max = 64, message = "비밀번호는 8자 이상 64자 이하로 입력해주세요.")
+    @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*?_]).{8,16}$",
+            message = "비밀번호는 8~16자의 영문 대/소문자, 숫자, 특수문자를 사용해 주세요.")
     private String password;
 
     @NotBlank(message = "닉네임은 필수 입력값입니다.")
-    @Size(max = 16, message = "닉네임은 16자 이하로 입력해주세요.")
+    @Pattern(regexp = "^[가-힣a-zA-Z0-9]{1,6}$",
+            message = "닉네임은 특수문자 없이 한글, 영문, 숫자로만 6자 이내로 입력해주세요.")
     private String nickname;
 }

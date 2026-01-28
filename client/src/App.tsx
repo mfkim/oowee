@@ -1,16 +1,16 @@
-import {Button} from "@/components/ui/button"
+import {Routes, Route} from "react-router-dom"
+import LoginPage from "@/pages/auth/LoginPage.tsx";
+import SignupPage from "@/pages/auth/SignupPage.tsx";
+import MainPage from "@/pages/MainPage.tsx";
 
 function App() {
-
   return (
-    <>
-      <div className="flex h-screen w-full flex-col items-center justify-center gap-4 bg-slate-50">
-        <h1 className="text-8xl font-black tracking-tight">
-          Oowee.
-        </h1>
-        <Button>shadcn/ui</Button>
-      </div>
-    </>
+    <Routes>
+      <Route path="/" element={<MainPage/>}/>
+
+      <Route path="/login" element={<LoginPage/>}/>
+      <Route path="/signup" element={<SignupPage/>}/>
+    </Routes>
   )
 }
 
