@@ -36,14 +36,18 @@ export default function MainPage() {
         setUser(response.data)
       } catch (error) {
         console.error("정보 조회 실패:", error)
-        handleLogout()
+        localStorage.removeItem("accessToken")
+        alert("인증이 만료되었습니다. 다시 로그인해주세요.")
+        navigate("/login")
       } finally {
         setLoading(false)
       }
     }
 
-    fetchMyInfo()
-  }, [navigate])
+    fetchMyInfo().then(() => {
+      console.log("정보 조회 완료!")
+    })
+  }, [])
 
   const handleLogout = () => {
     localStorage.removeItem("accessToken")

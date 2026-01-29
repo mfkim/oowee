@@ -49,7 +49,6 @@ public class MemberService {
     // 로그인
     @Transactional(readOnly = true)
     public String signIn(SignInRequest request) {
-        // 이메일이 없어도, 비밀번호가 틀려도 메시지는 똑같이!
         String errorMessage = "이메일 또는 비밀번호가 일치하지 않습니다.";
 
         // 이메일 확인
@@ -65,7 +64,7 @@ public class MemberService {
         return jwtTokenProvider.createToken(member.getEmail());
     }
 
-    // 이메일로 회원 전체 정보 가져오기
+    @Transactional(readOnly = true)
     public Member getMember(String email) {
         return memberRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));

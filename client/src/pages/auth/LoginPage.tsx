@@ -26,7 +26,7 @@ export default function LoginPage() {
     }
 
     try {
-      // 2. 서버 로그인 요청 (POST /api/members/signin)
+      // 2. 서버 로그인 요청 (POST /api/members/login)
       const response = await api.post("/api/members/login", {
         email: email,
         password: password,
@@ -41,11 +41,10 @@ export default function LoginPage() {
       navigate("/")
 
     } catch (error: any) {
-      console.error(error)
-      // 에러 메시지 처리
-      const errorMessage = error.response?.data?.message || "로그인에 실패했습니다."
-      const errorDetail = error.response?.data?.error || "아이디 또는 비밀번호를 확인해주세요."
-      alert(`${errorMessage}\n${errorDetail}`)
+      const detail = error.response?.data?.message || error.message
+      console.error("Login error detail:", detail)
+
+      alert("로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.")
     }
   }
 

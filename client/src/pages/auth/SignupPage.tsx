@@ -60,10 +60,12 @@ export default function SignupPage() {
       navigate("/login")
 
     } catch (error: any) {
-      console.error(error)
-      const message = error.response?.data?.message || "회원가입 중 오류가 발생했습니다."
-      const detail = error.response?.data?.error || ""
-      alert(`${message}\n${detail}`)
+      const detail = error.response?.data?.message || error.message
+      if (detail) {
+        console.error("Signup error detail:", detail)
+      }
+
+      alert("회원가입에 실패했습니다. 입력 정보를 다시 확인해주세요.")
     }
   }
 
