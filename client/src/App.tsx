@@ -2,6 +2,7 @@ import {Routes, Route} from "react-router-dom"
 import LoginPage from "@/pages/auth/LoginPage.tsx";
 import SignupPage from "@/pages/auth/SignupPage.tsx";
 import MainPage from "@/pages/MainPage.tsx";
+import DiceGamePage from "@/pages/game/DiceGamePage.tsx";
 
 function App() {
   return (
@@ -10,6 +11,8 @@ function App() {
 
       <Route path="/login" element={<LoginPage/>}/>
       <Route path="/signup" element={<SignupPage/>}/>
+
+      <Route path="/game/dice" element={<DiceGamePage />} />
     </Routes>
   )
 }

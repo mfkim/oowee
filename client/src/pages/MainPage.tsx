@@ -1,15 +1,16 @@
-import { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import {useEffect, useState} from "react"
+import {useNavigate} from "react-router-dom"
 import api from "@/lib/api"
-import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import {Skeleton} from "@/components/ui/skeleton.tsx";
+import {Button} from "@/components/ui/button"
+import {Skeleton} from "@/components/ui/skeleton"
+import {ArrowRightLeft, LogOut, ChevronRight, Wallet} from "lucide-react"
+
+const THEME = {
+  bgPage: "bg-slate-50",
+  bgCard: "bg-white",
+  textMain: "text-slate-900",
+  textSub: "text-slate-500",
+}
 
 interface UserInfo {
   email: string
@@ -37,105 +38,143 @@ export default function MainPage() {
       } catch (error) {
         console.error("정보 조회 실패:", error)
         localStorage.removeItem("accessToken")
-        alert("인증이 만료되었습니다. 다시 로그인해주세요.")
         navigate("/login")
       } finally {
         setLoading(false)
       }
     }
 
-    fetchMyInfo().then(() => {
-      console.log("정보 조회 완료!")
-    })
-  }, [])
+    fetchMyInfo()
+  }, [navigate])
 
   const handleLogout = () => {
     localStorage.removeItem("accessToken")
-    alert("로그아웃 되었습니다.")
     navigate("/login")
   }
 
+  // 로딩 스켈레톤 (스타일 맞춤)
   if (loading) {
     return (
-      <div className="flex min-h-screen w-full flex-col items-center bg-slate-50 p-4 pt-20">
-        <Card className="w-full max-w-md shadow-lg">
-          <CardHeader className="text-center pb-2">
-            {/* 제목 */}
-            <Skeleton className="h-8 w-3/4 mx-auto mb-2" />
-            <Skeleton className="h-4 w-1/2 mx-auto" />
-          </CardHeader>
-
-          <CardContent className="space-y-6">
-            {/* 포인트 카드 */}
-            <div className="rounded-xl bg-slate-900 p-6 h-40 flex flex-col justify-between">
-              <Skeleton className="h-4 w-20 bg-slate-700" />
-              <Skeleton className="h-10 w-32 bg-slate-700" />
-              <Skeleton className="h-3 w-40 bg-slate-700" />
+      <div className={`flex min-h-screen w-full flex-col items-center ${THEME.bgPage} p-4 pt-10 font-sans`}>
+        <div
+          className={`w-full max-w-md ${THEME.bgCard} rounded-[32px] p-8 shadow-xl shadow-slate-200/50 border border-slate-100`}>
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <Skeleton className="h-8 w-1/2"/>
+              <Skeleton className="h-4 w-1/3"/>
             </div>
-
-            {/* 메뉴 */}
-            <div className="grid gap-3">
-              <Skeleton className="h-12 w-full" />
-              <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-48 w-full rounded-3xl"/>
+            <div className="space-y-3">
+              <Skeleton className="h-20 w-full rounded-2xl"/>
+              <Skeleton className="h-20 w-full rounded-2xl"/>
             </div>
-
-            <Skeleton className="h-10 w-full" />
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="flex min-h-screen w-full flex-col items-center bg-slate-50 p-4 pt-20">
-      <Card className="w-full max-w-md shadow-lg">
-        <CardHeader className="text-center pb-2">
-          <CardTitle className="text-2xl font-bold">
-            반가워요, <span className="text-blue-600">{user?.nickname}</span>님!
-          </CardTitle>
-          <CardDescription>
-            오늘도 행운을 빕니다.
-          </CardDescription>
-        </CardHeader>
+    <div className={`flex min-h-screen w-full flex-col items-center ${THEME.bgPage} p-4 pt-10 font-sans`}>
 
-        <CardContent className="space-y-6">
+      {/* 메인 컨테이너 */}
+      <div
+        className={`w-full max-w-md ${THEME.bgCard} rounded-[32px] p-8 shadow-xl shadow-slate-200/50 border border-slate-100 flex flex-col relative overflow-hidden`}>
 
-          <div className="rounded-xl bg-slate-900 p-6 text-white shadow-md">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-slate-300 text-sm font-medium">내 포인트</span>
+        {/* 상단 인사말 */}
+        <div className="mb-6 space-y-1 animate-in slide-in-from-bottom-2 duration-500">
+          <h1 className="text-2xl font-black text-slate-800 tracking-tight">
+            반가워요, <span className="text-indigo-600">{user?.nickname}</span>님! 👋
+          </h1>
+          <p className="text-sm text-slate-400 font-medium">
+            오늘도 좋은 하루 되세요.
+          </p>
+        </div>
+
+        {/* 포인트 카드 */}
+        <div
+          className="relative w-full h-48 rounded-[28px] bg-linear-to-br from-indigo-500 to-violet-600 text-white p-7 shadow-lg shadow-indigo-200 mb-8 overflow-hidden group transition-transform hover:scale-[1.02] duration-300">
+          <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"/>
+          <div className="absolute bottom-0 left-0 w-32 h-32 bg-indigo-900/10 rounded-full blur-xl"/>
+
+          <div className="relative flex flex-col justify-between h-full z-10">
+            <div className="flex items-center gap-2 opacity-90">
+              <Wallet className="w-5 h-5"/>
+              <span className="text-sm font-semibold tracking-wide">내 지갑</span>
             </div>
 
-            <div className="flex items-baseline gap-1">
-              <span className="text-4xl font-bold tracking-tight">
-                {(user?.point ?? 0).toLocaleString()}
-              </span>
-              <span className="text-lg font-medium text-slate-400">P</span>
+            <div className="space-y-1">
+              <span className="text-indigo-100 text-sm font-medium">보유 포인트</span>
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-4xl font-black tracking-tight">
+                  {(user?.point ?? 0).toLocaleString()}
+                </span>
+                <span className="text-xl font-bold opacity-80">P</span>
+              </div>
             </div>
 
-            <p className="mt-4 text-xs text-slate-400">
+            <div className="text-xs text-indigo-200 font-medium tracking-wide opacity-80">
               {user?.email}
-            </p>
+            </div>
           </div>
+        </div>
 
-          {/* 메뉴 버튼 */}
-          <div className="grid gap-3">
-            <Button className="w-full" variant="outline" onClick={() => alert("서비스 준비 중입니다.")}>
-              🎲 주사위 던지기
-            </Button>
-            <Button className="w-full" variant="outline" onClick={() => alert("서비스 준비 중입니다.")}>
-              📋 게시판
-            </Button>
-          </div>
+        {/* 바로가기 */}
+        <div className="space-y-4 mb-8">
+          <p className="text-xs font-bold text-slate-400 uppercase tracking-wider px-1">바로가기</p>
 
-          <Button
-            className="w-full"
-            variant="ghost"
-            onClick={handleLogout}
+          {/* 🎲 주사위 게임 */}
+          <button
+            onClick={() => navigate("/game/dice")}
+            className="w-full flex items-center justify-between p-5 bg-slate-50 hover:bg-slate-100 rounded-[24px] border border-slate-100 transition-all active:scale-95 group"
           >
-            로그아웃
-          </Button>
-        </CardContent>
-      </Card>
+            <div className="flex items-center gap-4">
+              <div
+                className="w-12 h-12 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                🎲
+              </div>
+              <div className="text-left">
+                <p className="text-base font-bold text-slate-800">주사위 게임</p>
+                <p className="text-xs text-slate-400 font-medium">50% 확률에 도전하세요</p>
+              </div>
+            </div>
+            <div
+              className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-slate-300 group-hover:text-indigo-500 transition-colors">
+              <ChevronRight className="w-5 h-5"/>
+            </div>
+          </button>
+
+          {/* 환전하기 */}
+          <button
+            onClick={() => alert("환전하기 기능은 준비 중입니다! 💸")}
+            className="w-full flex items-center justify-between p-5 bg-slate-50 hover:bg-slate-100 rounded-[24px] border border-slate-100 transition-all active:scale-95 group"
+          >
+            <div className="flex items-center gap-4">
+              <div
+                className="w-12 h-12 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-indigo-500 group-hover:scale-110 transition-transform">
+                <ArrowRightLeft className="w-6 h-6"/>
+              </div>
+              <div className="text-left">
+                <p className="text-base font-bold text-slate-800">환전하기</p>
+                <p className="text-xs text-slate-400 font-medium">포인트를 현금으로</p>
+              </div>
+            </div>
+            <div
+              className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-slate-300 group-hover:text-teal-500 transition-colors">
+              <ChevronRight className="w-5 h-5"/>
+            </div>
+          </button>
+        </div>
+
+        {/* 로그아웃 */}
+        <Button
+          variant="ghost"
+          onClick={handleLogout}
+          className="text-slate-400 hover:text-rose-500 hover:bg-rose-50 transition-colors gap-2 self-center text-sm"
+        >
+          <LogOut className="w-4 h-4"/> 로그아웃
+        </Button>
+      </div>
     </div>
   )
 }
