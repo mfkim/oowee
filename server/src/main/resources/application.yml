@@ -24,8 +24,8 @@ logging:
 
 jwt:
   secret: ${JWT_SECRET}
-  expiration: 3600000 # 1시간 (1000 * 60 * 60 ms)
-
+#  expiration: 3600000 # 1시간 (1000 * 60 * 60 ms)
+  expiration: 86400000  # 24시간
 portone:
   store-id: ${PORTONE_STORE_ID}
   api-secret: ${PORTONE_API_SECRET}

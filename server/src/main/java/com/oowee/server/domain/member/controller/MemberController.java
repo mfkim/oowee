@@ -2,6 +2,7 @@ package com.oowee.server.domain.member.controller;
 
 import com.oowee.server.domain.member.dto.SignInRequest;
 import com.oowee.server.domain.member.dto.SignUpRequest;
+import com.oowee.server.domain.member.entity.Member;
 import com.oowee.server.domain.member.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +29,8 @@ public class MemberController {
         ));
     }
 
-    @PostMapping("/signin")
-    public ResponseEntity<Map<String, String>> signIn(@RequestBody @Valid SignInRequest request) {
+    @PostMapping("/login")
+    public ResponseEntity<Map<String, String>> login(@RequestBody @Valid SignInRequest request) {
         String token = memberService.signIn(request);
 
         return ResponseEntity.ok(Map.of(
@@ -39,16 +40,18 @@ public class MemberController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<Map<String, String>> getMyInfo(Principal principal) {
-        // Principal이 없으면 에러 처리
+    public ResponseEntity<Map<String, Object>> getMyInfo(Principal principal) {
         if (principal == null) {
             throw new IllegalArgumentException("인증 정보가 유효하지 않습니다.");
         }
 
+        Member member = memberService.getMember(principal.getName());
+
         return ResponseEntity.ok(Map.of(
-                "message", "내 정보 조회 성공!",
-                "email", principal.getName(),
-                "role", "USER"
+                "email", member.getEmail(),
+                "nickname", member.getNickname(),
+                "point", member.getCurrentPoints(),
+                "role", member.getRole()
         ));
     }
 }
