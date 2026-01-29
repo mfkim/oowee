@@ -3,17 +3,23 @@ import LoginPage from "@/pages/auth/LoginPage.tsx";
 import SignupPage from "@/pages/auth/SignupPage.tsx";
 import MainPage from "@/pages/MainPage.tsx";
 import DiceGamePage from "@/pages/game/DiceGamePage.tsx";
+import {Toaster} from "sonner";
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<MainPage/>}/>
+    <>
+      <Routes>
+        <Route path="/" element={<MainPage/>}/>
 
-      <Route path="/login" element={<LoginPage/>}/>
-      <Route path="/signup" element={<SignupPage/>}/>
+        <Route path="/login" element={<LoginPage/>}/>
+        <Route path="/signup" element={<SignupPage/>}/>
 
-      <Route path="/game/dice" element={<DiceGamePage />} />
-    </Routes>
+        <Route path="/game/dice" element={<DiceGamePage/>}/>
+      </Routes>
+
+      <Toaster position="top-center" richColors/>
+    </>
+
   )
 }
 

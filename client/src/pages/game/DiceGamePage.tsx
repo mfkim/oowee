@@ -6,6 +6,14 @@ import {Button} from "@/components/ui/button"
 import {Badge} from "@/components/ui/badge"
 import {useWindowSize} from "react-use";
 import Confetti from "react-confetti"
+import {toast} from "sonner";
+
+interface GameResult {
+  win: boolean;
+  diceNumber: number;
+  currentBalance: number;
+  playedBetAmount: number;
+}
 
 const THEME = {
   bgPage: "bg-slate-50",
@@ -65,7 +73,7 @@ export default function DiceGamePage() {
 
   const [betAmount, setBetAmount] = useState<number>(1000)
   const [bettingType, setBettingType] = useState<"ODD" | "EVEN" | null>(null)
-  const [result, setResult] = useState<any>(null)
+  const [result, setResult] = useState<GameResult | null>(null)
   const [loading, setLoading] = useState(false)
   const [rollingValue, setRollingValue] = useState(1)
   const [demoValue, setDemoValue] = useState(1)
@@ -87,8 +95,17 @@ export default function DiceGamePage() {
   }, [loading, result])
 
   const handlePlayGame = async () => {
-    if (!bettingType) return alert("어디에 걸지 선택해주세요!")
-    if (betAmount < 100) return alert("최소 100P 이상 배팅해주세요!")
+    if (!bettingType) {
+      toast.warning("배팅할 위치를 선택해주세요!", {
+        description: "홀수 또는 짝수 중 하나를 골라주세요."
+      })
+      return
+    }
+
+    if (betAmount < 100) {
+      toast.error("최소 100P 이상 배팅해주세요!")
+      return
+    }
 
     setLoading(true)
     setResult(null)
@@ -105,8 +122,9 @@ export default function DiceGamePage() {
       })
 
     } catch (error: any) {
-      console.error(error)
-      alert(error.response?.data?.message || "게임 중 문제가 발생했어요")
+      toast.error("게임 진행 중 문제가 생겼어요.", {
+        description: error.response?.data?.message || "잠시 후 다시 시도해주세요."
+      })
     } finally {
       setLoading(false)
     }
@@ -132,7 +150,7 @@ export default function DiceGamePage() {
 
       {/* 상단 네비게이션 */}
       <div className="w-full max-w-md flex items-center justify-between mb-6 mt-2 px-2">
-        <button onClick={() => navigate("/")}
+        <button onClick={() => navigate("/")} aria-label="뒤로가기"
                 className="p-2 -ml-2 rounded-full hover:bg-slate-200/50 transition-colors">
           <ChevronLeft className="w-6 h-6 text-slate-600"/>
         </button>
@@ -223,35 +241,59 @@ export default function DiceGamePage() {
         {/* 컨트롤 */}
         <div className="w-full space-y-6 z-10">
 
-          {/* 금액 입력 */}
+          {/* 배팅 포인트 */}
           <div className="text-center bg-slate-50/50 p-4 rounded-3xl border border-slate-100">
             <label className="text-xs font-bold text-slate-400 mb-3 block uppercase tracking-wider">배팅 포인트</label>
+
             <div className="flex items-center justify-center gap-4 mb-4">
-              <button onClick={() => setBetAmount(Math.max(100, betAmount - 1000))}
-                      className="p-3 rounded-xl bg-white shadow-sm border border-slate-100 hover:bg-slate-50 text-slate-400 transition-all active:scale-95">
+              {/* 마이너스 */}
+              <button
+                onClick={() => setBetAmount(Math.max(100, betAmount - 1000))}
+                disabled={loading}
+                className={`p-3 rounded-xl bg-white shadow-sm border border-slate-100 text-slate-400 transition-all 
+                  ${loading ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-95"}`}
+              >
                 <Minus className="w-5 h-5"/>
               </button>
-              <div className="text-3xl font-black text-slate-800 tracking-tight font-mono w-40">
+
+              {/* 포인트 표시 */}
+              <div
+                className={`text-3xl font-black text-slate-800 tracking-tight font-mono w-40 transition-opacity ${loading ? "opacity-50" : ""}`}>
                 {betAmount.toLocaleString()}
               </div>
-              <button onClick={() => addAmount(1000)}
-                      className="p-3 rounded-xl bg-white shadow-sm border border-slate-100 hover:bg-slate-50 text-slate-400 transition-all active:scale-95">
+
+              {/* 플러스 */}
+              <button
+                onClick={() => addAmount(1000)}
+                disabled={loading}
+                className={`p-3 rounded-xl bg-white shadow-sm border border-slate-100 text-slate-400 transition-all 
+                  ${loading ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-95"}`}
+              >
                 <Plus className="w-5 h-5"/>
               </button>
             </div>
 
             <div className="flex justify-center gap-2">
+              {/* 칩 */}
               {[1000, 5000, 10000].map((amt) => (
                 <button
                   key={amt}
                   onClick={() => addAmount(amt)}
-                  className={`px-3 py-1.5 ${THEME.bgChip} text-xs font-bold rounded-lg transition-all active:scale-95 shadow-sm`}
+                  disabled={loading}
+                  className={`px-3 py-1.5 ${THEME.bgChip} text-xs font-bold rounded-lg transition-all shadow-sm
+                    ${loading ? "opacity-50 cursor-not-allowed" : "active:scale-95"}`}
                 >
-                  +{amt / 1000}천
+                  +{amt / 1000}K
                 </button>
               ))}
-              <button onClick={() => setBetAmount(0)}
-                      className={`px-3 py-1.5 ${THEME.bgChip} text-slate-400 rounded-lg transition-transform active:scale-95 shadow-sm`}>
+              {/* 초기화 */}
+              <button
+                onClick={() => setBetAmount(0)}
+                aria-label="배팅 금액 초기화"
+                disabled={loading}
+                className={`px-3 py-1.5 ${THEME.bgChip} text-slate-400 rounded-lg transition-transform shadow-sm
+                  ${loading ? "opacity-50 cursor-not-allowed" : "active:scale-95"}`}
+              >
                 <RefreshCw className="w-3.5 h-3.5"/>
               </button>
             </div>
@@ -261,7 +303,9 @@ export default function DiceGamePage() {
           <div className="grid grid-cols-2 gap-3">
             <button
               onClick={() => setBettingType("ODD")}
-              className={`h-20 rounded-2xl text-xl font-bold transition-all duration-200 flex flex-col items-center justify-center gap-1 active:scale-95 relative overflow-hidden
+              disabled={loading} // 👈 로딩 중 클릭 방지
+              className={`h-20 rounded-2xl text-xl font-bold transition-all duration-200 flex flex-col items-center justify-center gap-1 relative overflow-hidden
+                    ${loading ? "opacity-50 cursor-not-allowed" : "active:scale-95"} 
                     ${bettingType === "ODD" ? THEME.oddBtnSelected : THEME.oddBtn}`}
             >
               <span>홀수</span>
@@ -269,7 +313,9 @@ export default function DiceGamePage() {
 
             <button
               onClick={() => setBettingType("EVEN")}
-              className={`h-20 rounded-2xl text-xl font-bold transition-all duration-200 flex flex-col items-center justify-center gap-1 active:scale-95 relative overflow-hidden
+              disabled={loading} // 👈 로딩 중 클릭 방지
+              className={`h-20 rounded-2xl text-xl font-bold transition-all duration-200 flex flex-col items-center justify-center gap-1 relative overflow-hidden
+                    ${loading ? "opacity-50 cursor-not-allowed" : "active:scale-95"} 
                     ${bettingType === "EVEN" ? THEME.evenBtnSelected : THEME.evenBtn}`}
             >
               <span>짝수</span>

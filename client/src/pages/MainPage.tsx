@@ -4,6 +4,7 @@ import api from "@/lib/api"
 import {Button} from "@/components/ui/button"
 import {Skeleton} from "@/components/ui/skeleton"
 import {ArrowRightLeft, LogOut, ChevronRight, Wallet} from "lucide-react"
+import {toast} from "sonner";
 
 const THEME = {
   bgPage: "bg-slate-50",
@@ -146,7 +147,7 @@ export default function MainPage() {
 
           {/* 환전하기 */}
           <button
-            onClick={() => alert("환전하기 기능은 준비 중입니다! 💸")}
+            onClick={() => toast.info("아직 준비 중인 기능이에요! 🚧")}
             className="w-full flex items-center justify-between p-5 bg-slate-50 hover:bg-slate-100 rounded-[24px] border border-slate-100 transition-all active:scale-95 group"
           >
             <div className="flex items-center gap-4">

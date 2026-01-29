@@ -59,8 +59,9 @@ export default function SignupPage() {
 
         {/* 헤더 */}
         <div className="text-center space-y-2 mb-8 mt-2">
-          <div className="mx-auto w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center mb-4 text-indigo-600">
-            <UserPlus className="w-7 h-7 pl-1" />
+          <div
+            className="mx-auto w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center mb-4 text-indigo-600">
+            <UserPlus className="w-7 h-7 pl-1"/>
           </div>
           <h1 className="text-2xl font-black text-slate-800 tracking-tight">
             새로운 계정 만들기
@@ -75,7 +76,7 @@ export default function SignupPage() {
 
           {/* 닉네임 */}
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-slate-500 ml-1">닉네임</label>
+            <label htmlFor="nickname" className="text-xs font-bold text-slate-500 ml-1">닉네임</label>
             <div className={THEME.inputWrapper}>
               <User className={THEME.inputIcon}/>
               <Input
@@ -84,6 +85,7 @@ export default function SignupPage() {
                 className={THEME.inputField}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                disabled={isLoading}
               />
             </div>
             <p className={THEME.helperText}>* 한글, 영문, 숫자 (1~6자)</p>
@@ -91,7 +93,7 @@ export default function SignupPage() {
 
           {/* 이메일 */}
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-slate-500 ml-1">이메일</label>
+            <label htmlFor="email" className="text-xs font-bold text-slate-500 ml-1">이메일</label>
             <div className={THEME.inputWrapper}>
               <Mail className={THEME.inputIcon}/>
               <Input
@@ -101,13 +103,14 @@ export default function SignupPage() {
                 className={THEME.inputField}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                disabled={isLoading}
               />
             </div>
           </div>
 
           {/* 비밀번호 */}
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-slate-500 ml-1">비밀번호</label>
+            <label htmlFor="password" className="text-xs font-bold text-slate-500 ml-1">비밀번호</label>
             <div className={THEME.inputWrapper}>
               <Lock className={THEME.inputIcon}/>
               <Input
@@ -117,6 +120,7 @@ export default function SignupPage() {
                 className={THEME.inputField}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                disabled={isLoading}
               />
             </div>
             <p className={THEME.helperText}>* 8~16자 (영문, 숫자, 특수문자 포함)</p>
@@ -124,7 +128,7 @@ export default function SignupPage() {
 
           {/* 비밀번호 확인 */}
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-slate-500 ml-1">비밀번호 확인</label>
+            <label htmlFor="confirmPassword" className="text-xs font-bold text-slate-500 ml-1">비밀번호 확인</label>
             <div className={THEME.inputWrapper}>
               <CheckCircle2 className={THEME.inputIcon}/>
               <Input
@@ -134,6 +138,7 @@ export default function SignupPage() {
                 className={THEME.inputField}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
+                disabled={isLoading}
               />
             </div>
             {/* 비밀번호 일치 여부 피드백 */}

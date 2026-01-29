@@ -4,6 +4,7 @@ import {Input} from "@/components/ui/input"
 import {Link, useNavigate} from "react-router-dom"
 import {Loader2, Mail, Lock, LogIn} from "lucide-react"
 import api from "@/lib/api"
+import {toast} from "sonner";
 
 const THEME = {
   bgPage: "bg-slate-50",
@@ -22,7 +23,7 @@ export default function LoginPage() {
 
   const handleLogin = async () => {
     if (!email || !password) {
-      alert("이메일과 비밀번호를 모두 입력해주세요.")
+      toast.warning("이메일과 비밀번호를 입력해주세요.")
       return
     }
 
@@ -36,12 +37,13 @@ export default function LoginPage() {
 
       const {token} = response.data
       localStorage.setItem("accessToken", token)
+      toast.success("로그인되었습니다!", { duration: 2000 })
       navigate("/")
 
     } catch (error: any) {
-      const detail = error.response?.data?.message || error.message
-      console.error("Login error detail:", detail)
-      alert("로그인에 실패했습니다. 정보를 확인해주세요.")
+      toast.error("로그인에 실패했습니다.", {
+        description: "이메일이나 비밀번호를 다시 확인해주세요."
+      })
     } finally {
       setIsLoading(false)
     }
