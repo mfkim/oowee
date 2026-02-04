@@ -1,7 +1,7 @@
 import {useState, useEffect} from "react"
 import api from "@/lib/api"
 import {useNavigate} from "react-router-dom"
-import {Loader2, ChevronLeft, RefreshCw, Minus, Plus, Coins, Check, X} from "lucide-react"
+import {Loader2, ChevronLeft, Minus, Plus, Coins, Check, X} from "lucide-react"
 import {Button} from "@/components/ui/button"
 import {Badge} from "@/components/ui/badge"
 import {useWindowSize} from "react-use";
@@ -102,8 +102,13 @@ export default function DiceGamePage() {
       return
     }
 
-    if (betAmount < 100) {
-      toast.error("최소 100P 이상 배팅해주세요!")
+    if (betAmount < 1000) {
+      toast.error("최소 1000P 이상 배팅해주세요!")
+      return
+    }
+
+    if (betAmount % 1000 !== 0) {
+      toast.error("배팅은 1,000P 단위여야 해요.")
       return
     }
 
@@ -169,11 +174,14 @@ export default function DiceGamePage() {
         {/* 주사위 */}
         <div className="min-h-80 w-full flex flex-col items-center justify-center z-10">
           {loading ? (
-            <div className="flex flex-col items-center justify-center gap-6">
+            <div className="flex flex-col items-center justify-center gap-8">
               <DiceFace value={rollingValue} isRolling={true}/>
-              <p className="text-xl font-bold text-indigo-600 animate-pulse tracking-tight">
-                과연 결과는...? 🎲
-              </p>
+              <div className="relative">
+                <div className="absolute -inset-1 bg-indigo-500/40 blur-lg rounded-full animate-pulse"></div>
+                <div className="relative w-32 h-2 bg-slate-100 rounded-full overflow-hidden shadow-inner ring-1 ring-slate-200/50">
+                  <div className="h-full w-full bg-linear-to-r from-purple-400 via-indigo-400 to-teal-400 animate-pulse shadow-[0_0_15px_rgba(45,212,191,0.5)]"></div>
+                </div>
+              </div>
             </div>
           ) : result ? (
             <div
@@ -207,30 +215,50 @@ export default function DiceGamePage() {
                 <div
                   className="mt-6 flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 text-sm text-slate-600 font-semibold border border-slate-200">
                   <Coins className="w-4 h-4 text-slate-500"/>
-                  <span>내 포인트: {result.currentBalance.toLocaleString()} P</span>
+                  <span>보유 포인트: {result.currentBalance.toLocaleString()} P</span>
                 </div>
               </div>
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center gap-8 py-4">
+            <div className="flex flex-col items-center justify-center gap-6 py-6 w-full">
               <div className="relative group cursor-pointer"
                    onClick={() => setDemoValue(Math.floor(Math.random() * 6) + 1)}>
                 <div
-                  className="absolute inset-0 bg-indigo-400/20 blur-2xl rounded-full scale-75 group-hover:scale-110 transition-transform duration-500"/>
-
+                  className="absolute inset-0 bg-indigo-500/20 blur-[50px] rounded-full scale-50 group-hover:scale-90 transition-transform duration-700"/>
                 <div
-                  className="relative transform transition-transform duration-500 group-hover:-translate-y-2 group-hover:rotate-3">
+                  className="relative transform transition-transform duration-500 group-hover:-translate-y-3 group-hover:rotate-15">
                   <DiceFace value={demoValue} isRolling={false}/>
                 </div>
               </div>
 
-              <div className="text-center space-y-2 animate-in fade-in slide-in-from-bottom-2 duration-700">
-                <p className="text-2xl font-black text-slate-800 tracking-tight">
-                  홀? 짝? <span className="text-indigo-600">선택</span>의 시간!
-                </p>
-                <p className="text-sm text-slate-400 font-medium">
-                  망설이지 말고 느낌대로 배팅하세요.
-                </p>
+              <div
+                className="flex flex-col items-center animate-in fade-in slide-in-from-bottom-2 duration-700 space-y-3">
+                <div
+                  className="group flex items-center gap-4 px-6 py-2.5 rounded-full bg-white/90 border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-md hover:scale-[1.02] hover:shadow-[0_8px_30px_rgb(79,70,229,0.1)] transition-all duration-300 cursor-default">
+
+                  <div className="flex items-center gap-2">
+                    <span className="relative flex h-2 w-2">
+                      <span
+                        className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-600"></span>
+                    </span>
+                    <div className="text-xs font-black tracking-wider flex items-center gap-1.5">
+                      <span
+                        className="text-transparent bg-clip-text bg-linear-to-br from-purple-500 to-indigo-600 drop-shadow-[0_1px_1px_rgba(147,51,234,0.3)]">
+                        ODD
+                      </span>
+                      <span className="text-slate-300 font-light">/</span>
+                      <span
+                        className="text-transparent bg-clip-text bg-linear-to-br from-teal-400 to-emerald-600 drop-shadow-[0_1px_1px_rgba(20,184,166,0.3)]">
+                        EVEN
+                      </span>
+                    </div>
+                  </div>
+                  <div className="w-px h-3.5 bg-slate-200"></div>
+                  <div className="opacity-80 group-hover:opacity-100 transition-opacity">
+                    <span className="text-sm font-black text-slate-700 tracking-tight">× 2.0</span>
+                  </div>
+                </div>
               </div>
             </div>
           )}
@@ -248,7 +276,7 @@ export default function DiceGamePage() {
             <div className="flex items-center justify-center gap-4 mb-4">
               {/* 마이너스 */}
               <button
-                onClick={() => setBetAmount(Math.max(100, betAmount - 1000))}
+                onClick={() => setBetAmount(Math.max(1000, betAmount - 1000))}
                 disabled={loading}
                 className={`p-3 rounded-xl bg-white shadow-sm border border-slate-100 text-slate-400 transition-all 
                   ${loading ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-95"}`}
@@ -273,28 +301,28 @@ export default function DiceGamePage() {
               </button>
             </div>
 
-            <div className="flex justify-center gap-2">
-              {/* 칩 */}
-              {[1000, 5000, 10000].map((amt) => (
-                <button
-                  key={amt}
-                  onClick={() => addAmount(amt)}
-                  disabled={loading}
-                  className={`px-3 py-1.5 ${THEME.bgChip} text-xs font-bold rounded-lg transition-all shadow-sm
-                    ${loading ? "opacity-50 cursor-not-allowed" : "active:scale-95"}`}
-                >
-                  +{amt / 1000}K
-                </button>
-              ))}
-              {/* 초기화 */}
+            <div className="space-y-2">
+              <div className="grid grid-cols-3 gap-2 px-2">
+                {[1000, 10000, 50000, 100000, 500000, 1000000].map((amt) => (
+                  <button
+                    key={amt}
+                    onClick={() => addAmount(amt)}
+                    disabled={loading}
+                    className={`py-2 ${THEME.bgChip} text-xs font-bold rounded-lg transition-all shadow-sm flex items-center justify-center gap-0.5
+                      ${loading ? "opacity-50 cursor-not-allowed" : "active:scale-95"}`}
+                  >
+                    <span>+{amt >= 1000000 ? `${amt / 1000000}M` : `${amt / 1000}K`}</span>
+                  </button>
+                ))}
+              </div>
+
+              {/* 초기화 버튼 */}
               <button
                 onClick={() => setBetAmount(0)}
-                aria-label="배팅 금액 초기화"
                 disabled={loading}
-                className={`px-3 py-1.5 ${THEME.bgChip} text-slate-400 rounded-lg transition-transform shadow-sm
-                  ${loading ? "opacity-50 cursor-not-allowed" : "active:scale-95"}`}
+                className="text-xs text-slate-400 font-medium underline decoration-slate-300 hover:text-slate-600 transition-colors py-1"
               >
-                <RefreshCw className="w-3.5 h-3.5"/>
+                배팅 포인트 초기화
               </button>
             </div>
           </div>
@@ -303,7 +331,7 @@ export default function DiceGamePage() {
           <div className="grid grid-cols-2 gap-3">
             <button
               onClick={() => setBettingType("ODD")}
-              disabled={loading} // 👈 로딩 중 클릭 방지
+              disabled={loading}
               className={`h-20 rounded-2xl text-xl font-bold transition-all duration-200 flex flex-col items-center justify-center gap-1 relative overflow-hidden
                     ${loading ? "opacity-50 cursor-not-allowed" : "active:scale-95"} 
                     ${bettingType === "ODD" ? THEME.oddBtnSelected : THEME.oddBtn}`}
@@ -313,7 +341,7 @@ export default function DiceGamePage() {
 
             <button
               onClick={() => setBettingType("EVEN")}
-              disabled={loading} // 👈 로딩 중 클릭 방지
+              disabled={loading}
               className={`h-20 rounded-2xl text-xl font-bold transition-all duration-200 flex flex-col items-center justify-center gap-1 relative overflow-hidden
                     ${loading ? "opacity-50 cursor-not-allowed" : "active:scale-95"} 
                     ${bettingType === "EVEN" ? THEME.evenBtnSelected : THEME.evenBtn}`}

@@ -11,9 +11,9 @@ import lombok.NoArgsConstructor;
 public class GameRequest {
 
     @NotNull(message = "베팅 금액은 필수입니다.")
-    @Min(value = 100, message = "최소 베팅 금액은 100포인트입니다.")
+    @Min(value = 1000, message = "최소 베팅 금액은 1000포인트입니다.")
     private Long betAmount;
 
-    @NotNull(message = "홀/짝 선택은 필수입니다.")
-    private BettingType bettingType;    // ODD or EVEN
+    @NotNull(message = "홀수 또는 짝수 선택은 필수입니다.")
+    private BettingType bettingType;
 }
