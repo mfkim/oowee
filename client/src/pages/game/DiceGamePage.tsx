@@ -276,7 +276,7 @@ export default function DiceGamePage() {
             <div className="flex items-center justify-center gap-4 mb-4">
               {/* 마이너스 */}
               <button
-                onClick={() => setBetAmount(Math.max(0, betAmount - 1000))}
+                onClick={() => setBetAmount(Math.max(1000, betAmount - 1000))}
                 disabled={loading}
                 className={`p-3 rounded-xl bg-white shadow-sm border border-slate-100 text-slate-400 transition-all 
                   ${loading ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-95"}`}

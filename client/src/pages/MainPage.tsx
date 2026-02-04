@@ -110,6 +110,7 @@ export default function MainPage() {
               <button
                 onClick={() => navigate("/payment")}
                 className="flex items-center gap-1 bg-white/20 hover:bg-white/30 text-white backdrop-blur-md px-3.5 py-1.5 rounded-full text-xs font-bold transition-all active:scale-95 shadow-sm"
+                aria-label="포인트 충전"
               >
                 <Plus className="w-3.5 h-3.5 stroke-3"/>
               </button>

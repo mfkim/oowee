@@ -8,6 +8,13 @@ import {toast} from "sonner"
 import api from "@/lib/api"
 import * as PortOne from "@portone/browser-sdk/v2"
 
+interface PortOneResponse {
+  paymentId: string
+  transactionId?: string
+  code?: string
+  message?: string
+}
+
 const THEME = {
   bgPage: "bg-slate-50",
   bgCard: "bg-white",
@@ -81,15 +88,22 @@ export default function PaymentPage() {
       })
     }
 
+    const storeId = import.meta.env.VITE_PORTONE_STORE_ID
+    const channelKey = import.meta.env.VITE_PORTONE_CHANNEL_KEY
+
+    if (!storeId || !channelKey) {
+      console.error("환경 변수 누락")
+      return toast.error("결제 설정 오류가 발생했습니다.")
+    }
+
     setLoading(true)
 
     try {
       const paymentId = `payment-${crypto.randomUUID()}`
 
-      // @ts-ignore
       const response = await PortOne.requestPayment({
-        storeId: import.meta.env.VITE_PORTONE_STORE_ID,
-        channelKey: import.meta.env.VITE_PORTONE_CHANNEL_KEY,
+        storeId: storeId,
+        channelKey: channelKey,
         paymentId: paymentId,
         orderName: `${selectedAmount.toLocaleString()} 포인트 충전`,
         totalAmount: selectedAmount,
@@ -99,10 +113,13 @@ export default function PaymentPage() {
           fullName: user.nickname,
           email: user.email,
         },
-      }) as any
+      }) as PortOneResponse
 
       if (!response) return toast.error("결제 응답이 없습니다.")
-      if (response.code != null) return toast.error("결제 실패", {description: response.message})
+
+      if (response.code !== undefined && response.code !== null) {
+        return toast.error("결제 실패", { description: response.message })
+      }
 
       await api.post("/api/payments/complete", {
         paymentId: response.paymentId,
@@ -213,7 +230,7 @@ export default function PaymentPage() {
           <div className="space-y-3">
             <Button
               onClick={handlePayment}
-              disabled={loading || selectedAmount === 0}
+              disabled={loading || selectedAmount === 0 || !user}
               className="w-full h-14 rounded-2xl text-lg font-bold bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-200 active:scale-95 transition-all"
             >
               {loading ? (
